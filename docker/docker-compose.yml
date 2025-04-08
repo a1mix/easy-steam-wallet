@@ -1,0 +1,39 @@
+name: easy-steam-wallet
+
+services:
+  php-fpm:
+    container_name: app_php_fpm
+    build:
+      context: ..
+      dockerfile: ./docker/php-fpm/Dockerfile
+    volumes:
+      - ..:/var/www
+  
+  nginx:
+    container_name: app_nginx
+    build: 
+      context: ..
+      dockerfile: ./docker/nginx/Dockerfile
+    ports:
+      - 8888:80
+    depends_on:
+      - php-fpm
+    volumes:
+      - ..:/var/www
+
+  mysql_db:
+    build:
+      context: .
+      dockerfile: ./mysql/Dockerfile
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: inetlab
+      MYSQL_PASSWORD: inetlab
+    volumes:
+      - mysql_data_inet:/var/lib/mysql/
+
+volumes:
+  mysql_data_inet:
